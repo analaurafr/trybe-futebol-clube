@@ -3,7 +3,7 @@ export interface ICRUDModelCreator<T> {
 }
 
 export interface ICRUDModelReader<T> {
-  findById(id: number): Promise<T | null>,
+  findById?(id: number): Promise<T | null>,
   findAll(): Promise<T[]>,
 }
 
