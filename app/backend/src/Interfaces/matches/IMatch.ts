@@ -6,3 +6,10 @@ export interface IMatch {
   homeTeamId: number;
   inProgress: boolean;
 }
+
+export interface IMatchReq {
+  homeTeamGoals: number;
+  awayTeamGoals: number;
+  awayTeamId: number;
+  homeTeamId: number;
+}

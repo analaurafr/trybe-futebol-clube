@@ -43,4 +43,44 @@ export default class MatchModel implements IMatchModel {
 
     return data;
   }
+
+  async updateStatus(id: number): Promise<number> {
+    const [matchStatus] = await this.model.update({ inProgress: false }, { where: { id } });
+
+    return matchStatus;
+  }
+
+  async updateMatch(
+    id: number,
+    homeTeamGoals: number,
+    awayTeamGoals: number,
+  ): Promise<number> {
+    const [matchInProgress] = await this.model.update(
+      { homeTeamGoals, awayTeamGoals },
+      { where: { id } },
+    );
+
+    return matchInProgress;
+  }
+
+  async createMatch(match: Omit<IMatch, 'id'>): Promise<IMatch> {
+    const data = await this.model.create(match);
+    const {
+      id,
+      homeTeamGoals,
+      awayTeamId,
+      awayTeamGoals,
+      homeTeamId,
+      inProgress,
+    }: IMatch = data;
+
+    return {
+      id,
+      homeTeamGoals,
+      awayTeamId,
+      awayTeamGoals,
+      homeTeamId,
+      inProgress,
+    };
+  }
 }
