@@ -22,7 +22,7 @@ export default class MatchService {
     return { status: 'SUCCESSFUL', data: allMatches };
   }
 
-  public async getByProgress(progressParam: string): Promise<ServiceResponse<IMatch[]>> {
+  public async getByProgress(progressParam: boolean): Promise<ServiceResponse<IMatch[]>> {
     const matchesInProgress = await this.matchModel.findByProgress(progressParam);
 
     return { status: 'SUCCESSFUL', data: matchesInProgress };
@@ -56,7 +56,7 @@ export default class MatchService {
       return { status: 'NOT_FOUND', data: { message: 'There is no team with such id!' } };
     }
 
-    const newMatch = await this.matchModel.createMatch({ ...match, inProgress: true });
+    const newMatch = await this.matchModel.create({ ...match, inProgress: true });
 
     return { status: 'SUCCESSFUL', data: newMatch };
   }

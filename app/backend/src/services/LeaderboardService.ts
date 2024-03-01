@@ -1,70 +1,59 @@
-import LeaderboardModel from '../models/LeaderboardModel';
-import { ILeaderboardReq, ILeaderboard } from '../Interfaces/leaderboard/ILeaderboard';
-import { ServiceResponse } from '../Interfaces/ServiceResponse';
+import MatchesModel from '../models/MatchModel';
+import TeamsModel from '../models/TeamModel';
+import { getTotalDraws, getTotalGames, getGoalsFavor, getGoalsOwn,
+  getTotalLosses, getTotalPoints, getTotalVictories, getEfficiency,
+  getGoalsBalance, getTeamsByOrder, getTotalVictoriesA,
+  getTotalDrawsA,
+  getTotalPointsA,
+  getTotalLossesA,
+  getGoalsFavorA,
+  getGoalsOwnA,
+  getTotalGamesA,
+  getGoalsBalanceA,
+  getEfficiencyA,
+} from '../utils/leaderboardUtils';
 
 export default class LeaderboardService {
-  private leaderboardModel: LeaderboardModel;
+  constructor(
+    private matchModel = new MatchesModel(),
+    private teamModel = new TeamsModel(),
+  ) {}
 
-  constructor() {
-    this.leaderboardModel = new LeaderboardModel();
+  public async getHomeTeam() {
+    const allTeams = await this.teamModel.findAll();
+    const allMatches = await this.matchModel.findByProgress(false);
+    const leaderboard = allTeams.map((team) => ({
+      name: team.teamName,
+      totalPoints: getTotalPoints(team.id, allMatches),
+      totalGames: getTotalGames(team.id, allMatches),
+      totalVictories: getTotalVictories(team.id, allMatches),
+      totalDraws: getTotalDraws(team.id, allMatches),
+      totalLosses: getTotalLosses(team.id, allMatches),
+      goalsFavor: getGoalsFavor(team.id, allMatches),
+      goalsOwn: getGoalsOwn(team.id, allMatches),
+      goalsBalance: getGoalsBalance(team.id, allMatches),
+      efficiency: getEfficiency(team.id, allMatches),
+    }));
+    getTeamsByOrder(leaderboard);
+    return { status: 'SUCCESSFUL', data: leaderboard };
   }
 
-  public async getHomeTeam(): Promise<ServiceResponse<ILeaderboard[]>> {
-    const leaderboardHome = await this.leaderboardModel.findAll();
-    const result = leaderboardHome.map((match: ILeaderboardReq) => ({ name: match.teamName,
-      totalPoints: (LeaderboardService.victories(match) * 3) + LeaderboardService.draws(match),
-      totalGames: match.homeMatch.length,
-      totalVictories: LeaderboardService.victories(match),
-      totalDraws: LeaderboardService.draws(match),
-      totalLosses: LeaderboardService.losses(match),
-      goalsFavor: LeaderboardService.favor(match),
-      goalsOwn: LeaderboardService.own(match),
-      goalsBalance: LeaderboardService.favor(match) - LeaderboardService.own(match),
-      efficiency: LeaderboardService.calculateEfficiency(match) }));
-    const classification = result.sort((teamA: ILeaderboard, teamB: ILeaderboard) => (
-      teamB.totalPoints - teamA.totalPoints
-      || teamB.totalVictories - teamA.totalVictories
-      || teamB.goalsBalance - teamA.goalsBalance
-      || teamB.goalsFavor - teamA.goalsFavor
-    ));
-    return { status: 'SUCCESSFUL', data: classification };
-  }
-
-  private static calculateEfficiency(param: ILeaderboardReq): string {
-    const totalPoints = (LeaderboardService.victories(param) * 3) + LeaderboardService.draws(param);
-    const efficiency = ((totalPoints / (param.homeMatch.length * 3)) * 100).toFixed(2);
-    return efficiency;
-  }
-
-  private static countMatches(param: ILeaderboardReq, condition: (item: number) => boolean)
-    : number {
-    return param.homeMatch.map((scoreBalance) => scoreBalance
-      .homeTeamGoals - scoreBalance.awayTeamGoals)
-      .filter(condition).length;
-  }
-
-  private static calculateGoals(param: ILeaderboardReq, reducer: (acc: number, item: any) => number)
-    : number {
-    return param.homeMatch.reduce(reducer, 0);
-  }
-
-  static victories(param: ILeaderboardReq): number {
-    return LeaderboardService.countMatches(param, (item) => item > 0);
-  }
-
-  static draws(param: ILeaderboardReq): number {
-    return LeaderboardService.countMatches(param, (item) => item === 0);
-  }
-
-  static losses(param: ILeaderboardReq): number {
-    return LeaderboardService.countMatches(param, (item) => item < 0);
-  }
-
-  static favor(param: ILeaderboardReq): number {
-    return LeaderboardService.calculateGoals(param, (acc, item) => acc + item.homeTeamGoals);
-  }
-
-  static own(param: ILeaderboardReq): number {
-    return LeaderboardService.calculateGoals(param, (acc, item) => acc + item.awayTeamGoals);
+  public async getAwayTeam() {
+    const allTeams = await this.teamModel.findAll();
+    const allMatches = await this.matchModel.findByProgress(false);
+    const leaderboard = allTeams.map((team) => ({
+      name: team.teamName,
+      totalPoints: getTotalPointsA(team.id, allMatches),
+      totalGames: getTotalGamesA(team.id, allMatches),
+      totalVictories: getTotalVictoriesA(team.id, allMatches),
+      totalDraws: getTotalDrawsA(team.id, allMatches),
+      totalLosses: getTotalLossesA(team.id, allMatches),
+      goalsFavor: getGoalsFavorA(team.id, allMatches),
+      goalsOwn: getGoalsOwnA(team.id, allMatches),
+      goalsBalance: getGoalsBalanceA(team.id, allMatches),
+      efficiency: getEfficiencyA(team.id, allMatches),
+    }));
+    getTeamsByOrder(leaderboard);
+    return { status: 'SUCCESSFUL', data: leaderboard };
   }
 }

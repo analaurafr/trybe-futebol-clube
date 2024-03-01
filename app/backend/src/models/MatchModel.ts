@@ -1,86 +1,58 @@
+import SequelizeMatches from '../database/models/SequelizeMatch';
 import { IMatch } from '../Interfaces/matches/IMatch';
-import { IMatchModel } from '../Interfaces/matches/IMatchModel';
-import SequelizeTeamModel from '../database/models/SequelizeTeam';
-import SequelizeMatchModel from '../database/models/SequelizeMatch';
+import IMatchModel, { NewEntity } from '../Interfaces/matches/IMatchModel';
+import SequelizeTeam from '../database/models/SequelizeTeam';
 
-export default class MatchModel implements IMatchModel {
-  private model = SequelizeMatchModel;
+export default class MatchesModel implements IMatchModel {
+  private model = SequelizeMatches;
 
   async findAll(): Promise<IMatch[]> {
-    const data = await this.model.findAll({
+    const dbData = await this.model.findAll({
       include: [
-        { model: SequelizeTeamModel,
-          as: 'homeTeam',
-          attributes: { exclude: ['id'] },
-        },
-
-        { model: SequelizeTeamModel,
-          as: 'awayTeam',
-          attributes: { exclude: ['id'] },
-        },
+        { model: SequelizeTeam, as: 'homeTeam', attributes: ['teamName'] },
+        { model: SequelizeTeam, as: 'awayTeam', attributes: ['teamName'] },
       ],
+      attributes: { exclude: ['home_team_id', 'away_team_id'] },
     });
-
-    return data;
+    return dbData;
   }
 
-  async findByProgress(progressParam: string): Promise<IMatch[]> {
-    const stringToBoolean = progressParam === 'true';
-    const data = await this.model.findAll({
-      where: { inProgress: stringToBoolean },
+  async findByProgress(progress: boolean): Promise<IMatch[]> {
+    const dbData = await this.model.findAll({
+      where: { inProgress: progress },
       include: [
-        { model: SequelizeTeamModel,
-          as: 'homeTeam',
-          attributes: ['teamName'],
-        },
-
-        { model: SequelizeTeamModel,
-          as: 'awayTeam',
-          attributes: ['teamName'],
-        },
+        { model: SequelizeTeam, as: 'homeTeam', attributes: ['teamName'] },
+        { model: SequelizeTeam, as: 'awayTeam', attributes: ['teamName'] },
       ],
+      attributes: { exclude: ['home_team_id', 'away_team_id'] },
     });
+    return dbData;
+  }
 
-    return data;
+  async finishMatch(id: number): Promise<void> {
+    await this.model.update({ inProgress: false }, { where: { id } });
+  }
+
+  public async updateMatch(id: number, homeTeamGoals: number, awayTeamGoals: number):
+  Promise<string> {
+    await this.model.update({ homeTeamGoals, awayTeamGoals }, { where: { id } });
+    return 'Updated';
+  }
+
+  async create(data: NewEntity<IMatch>): Promise<IMatch> {
+    const dbData = await this.model.create({
+      homeTeamId: data.homeTeamId,
+      homeTeamGoals: data.homeTeamGoals,
+      awayTeamId: data.awayTeamId,
+      awayTeamGoals: data.awayTeamGoals,
+      inProgress: true,
+    });
+    return dbData.dataValues;
   }
 
   async updateStatus(id: number): Promise<number> {
     const [matchStatus] = await this.model.update({ inProgress: false }, { where: { id } });
 
     return matchStatus;
-  }
-
-  async updateMatch(
-    id: number,
-    homeTeamGoals: number,
-    awayTeamGoals: number,
-  ): Promise<number> {
-    const [matchInProgress] = await this.model.update(
-      { homeTeamGoals, awayTeamGoals },
-      { where: { id } },
-    );
-
-    return matchInProgress;
-  }
-
-  async createMatch(match: Omit<IMatch, 'id'>): Promise<IMatch> {
-    const data = await this.model.create(match);
-    const {
-      id,
-      homeTeamGoals,
-      awayTeamId,
-      awayTeamGoals,
-      homeTeamId,
-      inProgress,
-    }: IMatch = data;
-
-    return {
-      id,
-      homeTeamGoals,
-      awayTeamId,
-      awayTeamGoals,
-      homeTeamId,
-      inProgress,
-    };
   }
 }

@@ -20,7 +20,7 @@ export default class LeaderboardModel implements ILeaderboardModel {
     return data;
   }
 
-  async findAllAw(): Promise<any> {
+  async findAllAway(): Promise<any> {
     const data = await this.teamModel.findAll({
       attributes: { exclude: ['id'] },
       include: [

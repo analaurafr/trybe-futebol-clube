@@ -21,6 +21,7 @@ interface HomeMatch {
 export interface ILeaderboardReq {
   teamName: string,
   homeMatch: HomeMatch[],
+  awayMatch: HomeMatch[],
 }
 export interface ILeaderboardAway {
   teamName: string,
