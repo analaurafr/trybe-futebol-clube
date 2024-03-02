@@ -1,6 +1,7 @@
+import TeamModel from '../models/TeamModel';
 import MatchModel from '../models/MatchModel';
 import { ServiceResponse } from '../Interfaces/ServiceResponse';
-import IMatchModel, { NewEntity } from '../Interfaces/matches/IMatchModel';
+import IMatchModel from '../Interfaces/matches/IMatchModel';
 import { IMatch } from '../Interfaces/matches/IMatch';
 import TeamsService from './TeamService';
 
@@ -31,20 +32,35 @@ export default class MatchService {
     return { status: 'SUCCESSFUL', data: result };
   }
 
-  public async create(data:NewEntity<IMatch>): Promise<ServiceResponse<IMatch>> {
-    const { homeTeamId, awayTeamId } = data;
-    if (homeTeamId === awayTeamId) {
+  static async verifyTeams(homeTeamId: number, awayTeamId: number): Promise<boolean> {
+    const teams = new TeamModel();
+    const foundHomeTeam = await teams.findById(homeTeamId);
+    const foundAwayTeam = await teams.findById(awayTeamId);
+    if (!foundAwayTeam || !foundHomeTeam) return false;
+    return true;
+  }
+
+  public async create(data: IMatch): Promise<ServiceResponse<IMatch | { message:string }>> {
+    const isValidTeams = await MatchService
+      .verifyTeams(data.homeTeamId, data.awayTeamId);
+
+    if (!isValidTeams) {
       return {
-        status: 'INVALID',
-        data: { message: 'It is not possible to create a match with two equal teams' } };
-    }
-    const homeTeamExists = await this.teamService.getTeamById(Number(homeTeamId));
-    const awayTeamExists = await this.teamService.getTeamById(Number(awayTeamId));
-    if (homeTeamExists.status === 'NOT_FOUND' || awayTeamExists.status === 'NOT_FOUND') {
-      return { status: 'NOT_FOUND', data: { message: 'There is no team with such id!' } };
+        status: 'NOT_FOUND',
+        data: { message: 'There is no team with such id!' },
+      };
     }
 
-    const newData = await this.matchModel.create(data);
-    return { status: 'CREATED', data: newData };
+    if (data.homeTeamId === data.awayTeamId) {
+      return {
+        status: 'UNPROCESSABLE_ENTITY',
+        data: { message: 'It is not possible to create a match with two equal teams' } };
+    }
+
+    const newMatch = await this.matchModel.create({ ...data, inProgress: true });
+    return {
+      status: 'CREATED',
+      data: newMatch,
+    };
   }
 }
