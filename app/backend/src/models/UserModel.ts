@@ -1,12 +1,17 @@
-import SequelizeUserModel from '../database/models/SequelizeUser';
 import { IUser } from '../Interfaces/users/IUser';
-import { IUserModel } from '../Interfaces/users/IUserModel';
+import IUserModel from '../Interfaces/users/IUserModel';
+import SequelizeUser from '../database/models/SequelizeUser';
 
-export default class UserModel implements IUserModel {
-  private model = SequelizeUserModel;
+export default class UsersModel implements IUserModel {
+  private model = SequelizeUser;
 
-  async findOne(email: string): Promise<IUser | null> {
-    const user = await this.model.findOne({ where: { email } });
-    return !user ? null : user;
+  async findByEmail(email: string): Promise<IUser | null> {
+    const user = await this.model.findOne({
+      where: {
+        email,
+      },
+    });
+
+    return user;
   }
 }

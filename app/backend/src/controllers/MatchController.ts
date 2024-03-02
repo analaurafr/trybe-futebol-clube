@@ -1,43 +1,39 @@
 import { Request, Response } from 'express';
 import MatchService from '../services/MatchService';
+import mapStatusHTTP from '../utils/mapStatusHTTP';
 
 export default class MatchController {
-  constructor(private matchService = new MatchService()) { }
+  constructor(
+    private matchService = new MatchService(),
+  ) { }
 
   public async getAllMatches(req: Request, res: Response) {
-    const matchesInProgress = req.query.inProgress as string | undefined;
-    let serviceResponse;
-
-    if (matchesInProgress === undefined) {
-      serviceResponse = await this.matchService.getAllMatches();
-    } else {
-      serviceResponse = await this.matchService.getByProgress(matchesInProgress);
+    const { inProgress } = req.query;
+    if (!inProgress) {
+      const serviceResponse = await this.matchService.getAllMatches();
+      return res.status(200).json(serviceResponse.data);
     }
-
-    return res.status(200).json(serviceResponse.data);
+    const inProgressFilter = inProgress === 'true';
+    const serviceResponse = await this.matchService.findByProgress(inProgressFilter);
+    res.status(200).json(serviceResponse.data);
   }
 
-  public async updateById(req: Request, res: Response) {
+  public async finishMatch(req: Request, res: Response) {
     const { id } = req.params;
-    const serviceResponse = await this.matchService.updateStatusById(Number(id));
-
-    return res.status(200).json(serviceResponse.data);
+    const { status, data } = await this.matchService.finishMatch(Number(id));
+    res.status(mapStatusHTTP(status)).json(data);
   }
 
   public async updateMatch(req: Request, res: Response) {
     const { id } = req.params;
     const { homeTeamGoals, awayTeamGoals } = req.body;
-    const serviceResponse = await this.matchService
+    const { status, data } = await this.matchService
       .updateMatch(Number(id), homeTeamGoals, awayTeamGoals);
-    return res.status(200).json(serviceResponse.data);
+    return res.status(mapStatusHTTP(status)).json(data);
   }
 
-  public async createMatch(req: Request, res: Response) {
-    const serviceResponse = await this.matchService.createMatch(req.body);
-
-    if (serviceResponse.status === 'NOT_FOUND') {
-      return res.status(404).json(serviceResponse.data);
-    }
-    return res.status(201).json(serviceResponse.data);
+  public async create(req: Request, res: Response) {
+    const { status, data } = await this.matchService.create(req.body);
+    res.status(mapStatusHTTP(status)).json(data);
   }
 }

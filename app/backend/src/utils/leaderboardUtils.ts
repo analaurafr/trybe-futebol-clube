@@ -1,4 +1,4 @@
-import { ILeaderboard } from '../Interfaces/leaderboard/ILeaderboard';
+import ILeaderboard from '../Interfaces/leaderboard/ILeaderboard';
 import { IMatch } from '../Interfaces/matches/IMatch';
 
 function getTotalVictories(id: number, matches: IMatch[]):number {

@@ -1,4 +1,4 @@
-import MatchesModel from '../models/MatchModel';
+import MatchModel from '../models/MatchModel';
 import TeamsModel from '../models/TeamModel';
 import { getTotalDraws, getTotalGames, getGoalsFavor, getGoalsOwn,
   getTotalLosses, getTotalPoints, getTotalVictories, getEfficiency,
@@ -15,7 +15,7 @@ import { getTotalDraws, getTotalGames, getGoalsFavor, getGoalsOwn,
 
 export default class LeaderboardService {
   constructor(
-    private matchModel = new MatchesModel(),
+    private matchModel = new MatchModel(),
     private teamModel = new TeamsModel(),
   ) {}
 

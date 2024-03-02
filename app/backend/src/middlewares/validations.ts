@@ -1,55 +1,40 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { LoginBody } from '../Interfaces/users/IUser';
-
-const jwtSecret = process.env.JWT_SECRET || 'secret';
 
 export default class Validations {
-  private static passwordMinLength = 6;
-  private static emailRegex = /\S+@\S+\.\S+/;
-  public static isValidEmail(email: string): boolean {
-    return this.emailRegex.test(email);
-  }
+  static loginValidation(req: Request, res: Response, next: NextFunction): Response | void {
+    const { email, password } = req.body;
 
-  static validateLogin(req: Request, res: Response, next: NextFunction): Response | void {
-    const { email, password } = req.body as LoginBody;
+    if (!email || !password) return res.status(400).json({ message: 'All fields must be filled' });
 
-    if (!email || !password) {
-      return res.status(400).json({ message: 'All fields must be filled' });
-    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if (!Validations.isValidEmail(email) || password.length < Validations.passwordMinLength) {
+    if (!emailRegex.test(email)) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
+    if (password.length < 6) return res.status(401).json({ message: 'Invalid email or password' });
 
     next();
   }
 
-  static validateToken(req: Request, res: Response, next: NextFunction): Response | void {
-    const { authorization } = req.headers;
-
-    if (!authorization) {
+  static handle(req: Request, res: Response, next: NextFunction) {
+    const tokenAuth = req.headers.authorization;
+    if (!tokenAuth) {
       return res.status(401).json({ message: 'Token not found' });
     }
+
+    const [type, token] = tokenAuth.split(' ');
+    if (type !== 'Bearer') {
+      return res.status(401).json({ message: 'Token must be a valid token' });
+    }
+
     try {
-      const tokenWithoutBearer = authorization.replace(/^bearer /i, '');
-      const jwtVerify = jwt.verify(tokenWithoutBearer, jwtSecret);
-      res.locals.token = jwtVerify;
-      next();
+      const secret = process.env.JWT_SECRET ?? 'secret_qualquer';
+      const payload = jwt.verify(token, secret);
+      res.locals.auth = payload;
     } catch (err) {
       return res.status(401).json({ message: 'Token must be a valid token' });
     }
-  }
-
-  static validateMatch(req: Request, res: Response, next: NextFunction): Response | void {
-    const { homeTeamId, awayTeamId } = req.body;
-
-    if (homeTeamId === awayTeamId) {
-      return res.status(422).json({
-        message: 'It is not possible to create a match with two equal teams',
-      });
-    }
-
     next();
   }
 }

@@ -1,33 +1,37 @@
 import * as bcrypt from 'bcryptjs';
+import * as jwt from 'jsonwebtoken';
+import { ServiceResponseError, ServiceResponse } from '../Interfaces/ServiceResponse';
+import IUserModel from '../Interfaces/users/IUserModel';
 import UserModel from '../models/UserModel';
-import { LoginBody, IUser } from '../Interfaces/users/IUser';
-import { IUserModel } from '../Interfaces/users/IUserModel';
-import { ServiceResponse } from '../Interfaces/ServiceResponse';
-import Token from '../utils/userToken';
+
+type LoginResponse = {
+  token: string
+};
 
 export default class UserService {
+  private static readonly invalidCredentialsResponse: ServiceResponseError = {
+    status: 'UNAUTHORIZED',
+    data: {
+      message: 'Invalid email or password',
+    } };
+
   constructor(
     private userModel: IUserModel = new UserModel(),
-    private userToken = new Token(),
-  ) { }
+  ) {}
 
-  public async findEmail(body: LoginBody): Promise<ServiceResponse<IUser>> {
-    const user = await this.userModel.findOne(body.email);
-
-    if (!user) {
-      return { status: 'UNAUTHORIZED', data: { message: 'Invalid email or password' } };
-    }
-
-    const verifyPassword = bcrypt.compareSync(body.password, user.password);
-
-    if (!verifyPassword) {
-      return { status: 'UNAUTHORIZED', data: { message: 'Invalid email or password' } };
-    }
-
-    const { email, role } = user;
-
-    const token = this.userToken.sign({ email, role });
-
-    return { status: 'SUCCESSFUL', data: token };
+  public async login(email: string, password: string) : Promise<ServiceResponse<LoginResponse>> {
+    const user = await this.userModel.findByEmail(email);
+    if (!user) return UserService.invalidCredentialsResponse;
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) return UserService.invalidCredentialsResponse;
+    const payload = { sub: user.id, role: user.role, email: user.email };
+    const secret = process.env.JWT_SECRET ?? 'secret_qualquer';
+    const token = jwt.sign(payload, secret, { expiresIn: '1d' });
+    return {
+      status: 'SUCCESSFUL',
+      data: {
+        token,
+      },
+    };
   }
 }
