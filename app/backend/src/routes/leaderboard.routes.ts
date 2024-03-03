@@ -1,11 +1,12 @@
 import { Request, Response, Router } from 'express';
 import LeaderboardController from '../controllers/LeaderboardController';
 
-const leaderboardController = new LeaderboardController();
+const leaderboardRouter = Router();
+const controller = new LeaderboardController();
 
-const router = Router();
+leaderboardRouter.get(
+  '/home',
+  (req: Request, res: Response) => controller.getAll(req, res),
+);
 
-router.get('/home', (req: Request, res: Response) => leaderboardController.getHomeTeam(req, res));
-router.get('/away', (req: Request, res: Response) => leaderboardController.getAwayTeam(req, res));
-
-export default router;
+export default leaderboardRouter;
