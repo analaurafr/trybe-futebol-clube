@@ -1,6 +1,6 @@
+import { ICRUDModelReader } from '../ICRUDModel';
 import { ITeam } from './ITeam';
 
-export interface ITeamModel {
-  findAll(): Promise<ITeam[]>,
-  findById(id: ITeam['id']): Promise<ITeam | null>,
+export interface ITeamModel extends ICRUDModelReader<ITeam> {
+  findById(id: number): Promise<ITeam | null>,
 }

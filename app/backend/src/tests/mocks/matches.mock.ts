@@ -1,84 +1,65 @@
-const allMatches = [{
-  home_team_id: 16,
-  home_team_goals: 1,
-  away_team_id: 8,
-  away_team_goals: 1,
-  in_progress: false,
-},
-    {  home_team_id: 9,
-      home_team_goals: 1,
-      away_team_id: 14,
-      away_team_goals: 1,
-      in_progress: false,
-    },
-    {
-      home_team_id: 4,
-      home_team_goals: 3,
-      away_team_id: 11,
-      away_team_goals: 0,
-      in_progress: false,
-    },
-  ];
-
-const matchesInProgress = [
+const allMatches = [
   {
-      home_team_id: 16,
-      home_team_goals: 2,
-      away_team_id: 9,
-      away_team_goals: 0,
-      in_progress: true,
+    "id": 1,
+    "homeTeamId": 16,
+    "homeTeamGoals": 1,
+    "awayTeamId": 8,
+    "awayTeamGoals": 1,
+    "inProgress": false,
+    "homeTeam": {
+      "teamName": "São Paulo"
     },
-    {
-      home_team_id: 6,
-      home_team_goals: 1,
-      away_team_id: 1,
-      away_team_goals: 0,
-      in_progress: true,
-    },
-    {
-      home_team_id: 11,
-      home_team_goals: 0,
-      away_team_id: 10,
-      away_team_goals: 0,
-      in_progress: true,
-    },
-    {
-      home_team_id: 7,
-      home_team_goals: 2,
-      away_team_id: 15,
-      away_team_goals: 2,
-      in_progress: true,
-    },
-    {
-      home_team_id: 5,
-      home_team_goals: 1,
-      away_team_id: 3,
-      away_team_goals: 1,
-      in_progress: true,
-    },
-    {
-      home_team_id: 4,
-      home_team_goals: 1,
-      away_team_id: 12,
-      away_team_goals: 1,
-      in_progress: true,
-    },
-    {
-      home_team_id: 8,
-      home_team_goals: 1,
-      away_team_id: 14,
-      away_team_goals: 2,
-      in_progress: true,
-    },
-    {
-      home_team_id: 13,
-      home_team_goals: 1,
-      away_team_id: 2,
-      away_team_goals: 1,
-      in_progress: true,
+    "awayTeam": {
+      "teamName": "Grêmio"
     }
+  },
+  {
+    "id": 2,
+    "homeTeamId": 9,
+    "homeTeamGoals": 1,
+    "awayTeamId": 14,
+    "awayTeamGoals": 1,
+    "inProgress": false,
+    "homeTeam": {
+      "teamName": "Internacional"
+    },
+    "awayTeam": {
+      "teamName": "Santos"
+    }
+  },
+  {
+    "id": 3,
+    "homeTeamId": 4,
+    "homeTeamGoals": 3,
+    "awayTeamId": 11,
+    "awayTeamGoals": 0,
+    "inProgress": false,
+    "homeTeam": {
+      "teamName": "Corinthians"
+    },
+    "awayTeam": {
+      "teamName": "Napoli-SC"
+    }
+  },
+  {
+    "id": 41,
+    "homeTeamId": 16,
+    "homeTeamGoals": 2,
+    "awayTeamId": 9,
+    "awayTeamGoals": 0,
+    "inProgress": true,
+    "homeTeam": {
+      "teamName": "São Paulo"
+    },
+    "awayTeam": {
+      "teamName": "Internacional"
+    }
+  },
 ]
 
-export { allMatches,
-matchesInProgress
-};
+const mactchesInProgress = allMatches.filter(match => match.inProgress);
+
+export default {
+  allMatches,
+  mactchesInProgress
+}

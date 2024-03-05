@@ -1,65 +1,72 @@
-import {
-  DataTypes,
-  Model,
-  InferAttributes,
-  InferCreationAttributes,
-  CreationOptional,
-} from 'sequelize';
+import { DataTypes, Model, Optional } from 'sequelize';
 import db from '.';
 import SequelizeTeam from './SequelizeTeam';
 
-class ModelMatch extends Model<InferAttributes<ModelMatch>,
-InferCreationAttributes<ModelMatch>> {
-  declare id: CreationOptional<number>;
-  declare homeTeamId: number;
-  declare homeTeamGoals: number;
-  declare awayTeamId:number;
-  declare awayTeamGoals: number;
-  declare inProgress: boolean;
+interface MatchAttributes {
+  id: number;
+  homeTeamId: number;
+  homeTeamGoals: number;
+  awayTeamId: number;
+  awayTeamGoals: number;
+  inProgress: boolean;
 }
 
-ModelMatch.init({
-  id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  homeTeamId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    field: 'home_team_id',
-  },
-  homeTeamGoals: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    field: 'home_team_goals',
-  },
-  awayTeamId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    field: 'away_team_id',
-  },
-  awayTeamGoals: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    field: 'away_team_goals',
-  },
-  inProgress: {
-    type: DataTypes.BOOLEAN,
-    allowNull: false,
-    field: 'in_progress',
-  },
-}, {
-  sequelize: db,
-  modelName: 'matches',
-  timestamps: false,
-  underscored: true,
-});
+type MatchCreationAttributes = Optional<MatchAttributes, 'id'>;
 
-ModelMatch.belongsTo(SequelizeTeam, { as: 'homeTeam', foreignKey: 'home_team_id' });
-ModelMatch.belongsTo(SequelizeTeam, { as: 'awayTeam', foreignKey: 'away_team_id' });
-SequelizeTeam.hasMany(ModelMatch, { foreignKey: 'homeTeamId', as: 'homeMatch' });
-SequelizeTeam.hasMany(ModelMatch, { foreignKey: 'awayTeamId', as: 'awayMatch' });
+class SequelizeMatches extends Model<MatchAttributes, MatchCreationAttributes> {
+  public id!: number;
+  public homeTeamId!: number;
+  public homeTeamGoals!: number;
+  public awayTeamId!: number;
+  public awayTeamGoals!: number;
+  public inProgress!: boolean;
+}
 
-export default ModelMatch;
+SequelizeMatches.init(
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    homeTeamId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'home_team_id',
+    },
+    homeTeamGoals: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'home_team_goals',
+    },
+    awayTeamId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'away_team_id',
+    },
+    awayTeamGoals: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      field: 'away_team_goals',
+    },
+    inProgress: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      field: 'in_progress',
+    },
+  },
+  {
+    underscored: true,
+    sequelize: db,
+    modelName: 'Match',
+    timestamps: false,
+  },
+);
+
+SequelizeMatches.belongsTo(SequelizeTeam, { as: 'homeTeam', foreignKey: 'home_team_id' });
+SequelizeMatches.belongsTo(SequelizeTeam, { as: 'awayTeam', foreignKey: 'away_team_id' });
+SequelizeTeam.hasMany(SequelizeMatches, { foreignKey: 'homeTeamId', as: 'homeMatch' });
+SequelizeTeam.hasMany(SequelizeMatches, { foreignKey: 'awayTeamId', as: 'awayMatch' });
+
+export default SequelizeMatches;

@@ -1,12 +1,11 @@
-export interface IUser {
-  id: number;
-  username: string;
-  role: string;
-  email: string;
-  password: string;
+import { Identifiable } from '../index';
+
+export interface ILogin {
+  email: string,
+  password: string,
 }
 
-export interface LoginBody {
-  email: string;
-  password: string;
+export interface User extends Identifiable, ILogin {
+  username: string,
+  role: string,
 }

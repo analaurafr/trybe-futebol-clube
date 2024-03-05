@@ -1,14 +1,14 @@
 import { Router } from 'express';
-import teamsRouter from './team.routes';
-import usersRouter from './user.routes';
-import matchesRouter from './match.routes';
-import leaderboardRouter from './leaderboard.routes';
+import teamRouter from './team.routes';
+// import loginRouter from './login.routes';
+// import matchsRouter from './Matchs.routes';
+// import leaderRoutes from './leaderboard.route';
 
 const router = Router();
 
-router.use('/teams', teamsRouter);
-router.use('/login', usersRouter);
-router.use('/matches', matchesRouter);
-router.use('/leaderboard', leaderboardRouter);
+router.use('/teams', teamRouter);
+// router.use('/login', loginRouter);
+// router.use('/matches', matchsRouter);
+// router.use('/leaderboard', leaderRoutes);
 
 export default router;

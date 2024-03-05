@@ -1,18 +1,19 @@
-import { IUser } from '../../Interfaces/users/IUser';
-import { Model, QueryInterface, DataTypes } from "sequelize";
+import { QueryInterface, DataTypes, Model } from 'sequelize';
+import { Users } from '../../Interfaces/users/UserTypes';
 
 export default {
-  up(queryInterface: QueryInterface) {
-    return queryInterface.createTable<Model<IUser>>("users", {
+  up: async (queryInterface: QueryInterface) => {
+    await queryInterface.createTable<Model<Users>>('users', {
       id: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
         allowNull: false,
+        autoIncrement: true,
+        primaryKey: true,
       },
       username: {
         type: DataTypes.STRING,
         allowNull: false,
+        field: 'username'
       },
       role: {
         type: DataTypes.STRING,
@@ -25,12 +26,10 @@ export default {
       password: {
         type: DataTypes.STRING,
         allowNull: false,
-      }
-
+      },
     });
   },
-
-  down(queryInterface: QueryInterface) {
-    return queryInterface.dropTable("users");
+  down: async (queryInterface: QueryInterface) => {
+    await queryInterface.dropTable('users');
   },
 };

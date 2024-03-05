@@ -1,11 +1,11 @@
+import { ICRUDModelReader } from '../ICRUDModel';
 import { IMatch } from './IMatch';
+import { MatchInfos } from './MatchInfo';
 
-export default interface IMatchModel {
-  findByProgress(progress: boolean):Promise<IMatch[]>,
-  findAll(): Promise<IMatch[]>,
-  finishMatch(id: number): Promise<void>,
-  updateMatch(id: number, homeTeamGoals:number, awayTeamGoals: number): Promise<string>,
-  create(data: Partial<IMatch>): Promise<IMatch>,
+export interface IMatchModel extends ICRUDModelReader<IMatch> {
+  findMatchsFiltred(query: string): Promise<IMatch[]>;
+  patchInprogress(id: number): Promise<void>
+  patchInprogress(id: number): Promise<void>;
+  updateScore(homeTeamGoals: number, awayTeamGoals: number, id: number): Promise<void>
+  create(matchInfos: MatchInfos): Promise<IMatch>
 }
-
-export type NewEntity<T> = Omit<T, 'id'>;

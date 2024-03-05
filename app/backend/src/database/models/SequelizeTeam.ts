@@ -5,31 +5,32 @@ import {
   InferCreationAttributes,
   CreationOptional,
 } from 'sequelize';
-import sequelize from '.';
+import db from '.';
 
-class ModelTeam extends Model<InferAttributes<ModelTeam>,
-InferCreationAttributes<ModelTeam>> {
+class SequelizeTeam extends
+  Model<InferAttributes<SequelizeTeam>,
+  InferCreationAttributes<SequelizeTeam>> {
   declare id: CreationOptional<number>;
+
   declare teamName: string;
 }
 
-ModelTeam.init({
+SequelizeTeam.init({
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
-    autoIncrement: true,
     allowNull: false,
+    autoIncrement: true,
   },
   teamName: {
     type: DataTypes.STRING,
     allowNull: false,
-    field: 'team_name',
   },
 }, {
-  sequelize,
   underscored: true,
+  sequelize: db,
   modelName: 'teams',
   timestamps: false,
 });
 
-export default ModelTeam;
+export default SequelizeTeam;

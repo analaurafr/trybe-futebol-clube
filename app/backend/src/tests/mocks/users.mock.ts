@@ -1,24 +1,21 @@
-const user =
-  {
-    id: 1,
-    username: 'Admin',
-    role: 'admin',
-    email: 'admin@admin.com',
-    password: '$2a$08$xi.Hxk1czAO0nZR..B393u10aED0RQ1N3PAEXQ7HxtLjKPEZBu.PW'
-  }
+const user = {
+  id: 1,
+  username: 'Admin',
+  email: 'admin@admin.com',
+  password: '$2a$08$xi.Hxk1czAO0nZR..B393u10aED0RQ1N3PAEXQ7HxtLjKPEZBu.PW',
+  role: 'admin'
+};
 
-  const login = {
-    email: 'admin@admin.com',
-    password: '$2a$08$xi.Hxk1czAO0nZR..B393u10aED0RQ1N3PAEXQ7HxtLjKPEZBu.PW'
-  }
+const login = {
+  email: 'admin@admin.com',
+  password: 'secret_admin',
+}
 
-  const loginFalse = {
-    email: 'admin@admin.com',
-    password: '$2a$10$HDkFwOMKOI6PTza0F7.YRu1Bqsqb9hx7XkuV7QeYB5dRL4z9DI1M'
-  }
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiaWF0IjoxNzA4NDI4NTUzLCJleHAiOjE3MDkwMzMzNTN9.4xHMbiNRylTBtwLuLs89oA64_LaI9RrcqPrkvJloc8c'
 
-  export {
-    user,
-    login,
-    loginFalse
-  }
+
+export default {
+  user,
+  login,
+  token,
+}

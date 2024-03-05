@@ -1,9 +1,10 @@
-import { Model, QueryInterface, DataTypes } from 'sequelize';
-import { IMatch } from '../../Interfaces/matches/IMatch';
+import { DataTypes, QueryInterface } from 'sequelize';
+import { Matches } from '../../Interfaces/matches/MatchTypes';
+import { Model } from 'sequelize';
 
 export default {
-  up(queryInterface: QueryInterface) {
-    return queryInterface.createTable<Model<IMatch>>('matches', {
+  up: (queryInterface: QueryInterface) => {
+    return queryInterface.createTable<Model<Matches>>('matches', {
       id: {
         type: DataTypes.INTEGER,
         allowNull: false,
@@ -14,10 +15,6 @@ export default {
         type: DataTypes.INTEGER,
         allowNull: false,
         field: 'home_team_id',
-        references: {
-          model: 'teams',
-          key: 'id',
-        },
       },
       homeTeamGoals: {
         type: DataTypes.INTEGER,
@@ -28,10 +25,6 @@ export default {
         type: DataTypes.INTEGER,
         allowNull: false,
         field: 'away_team_id',
-        references: {
-          model: 'teams',
-          key: 'id',
-        },
       },
       awayTeamGoals: {
         type: DataTypes.INTEGER,
@@ -45,7 +38,7 @@ export default {
       },
     });
   },
-  down(queryInterface: QueryInterface) {
+  down: (queryInterface: QueryInterface) => {
     return queryInterface.dropTable('matches');
   },
 };
