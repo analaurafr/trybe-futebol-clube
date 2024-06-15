@@ -2,12 +2,6 @@
 
 Este projeto, desenvolvido como parte dos estudos do módulo de _Back-end_ da escola de tecnologia [Trybe](https://www.betrybe.com/), tem como objetivo colocar em prática os conteúdos aprendidos, aplicando todos eles em um único projeto: o Trybe Futebol Clube (TFC). O projeto deve incluir tanto o back-end quanto o front-end funcionando com um banco de dados.
 
-## Por que isso é importante?
-
-A importância deste projeto reside em entender a integração entre **front-end e back-end (com banco de dados)**, além de aprender como essa configuração pode ser feita utilizando o Docker Compose. Esta integração é crucial para desenvolver aplicações completas e robustas no mundo real.
-
-## Especificação
-
 ### O que foi avaliado?
 
 -   **Dockerização:** Realização da dockerização dos apps, configuração de network, volume e compose.
